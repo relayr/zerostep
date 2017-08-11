@@ -4,7 +4,7 @@
   "description": "ZeroStep is a small library to wire modules and manage their lifecycles",
   "main": "index.js",
   "scripts": {
-    "test": "eslint index.js spec/*.js && mocha spec/*.js",
+    "test": "mocha spec/*.js && eslint index.js spec/*.js",
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -- -u exports -R spec spec/*.spec.js"
   },
   "repository": {

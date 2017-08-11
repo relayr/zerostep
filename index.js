@@ -107,12 +107,7 @@ class ZeroStep {
           const module = modules.shift()
           moduleNames.push(module.name)
           promise = promise.then(() => {
-            const ctx = {
-              logger: this._config.loggerCb(module.name),
-            }
-            if (module.imports) {
-              module.imports.forEach((imp) => ctx[imp] = this._services.get(imp))
-            }
+            const ctx = this._buildContextForModule(module)
             const imports = module.imports ? module.imports.join(', ') : ''
             const exports = module.export !== undefined ? module.export : ''
             this._logger.info(`Initializing module ${module.name}(${imports}) -> [${exports}]`)
@@ -186,7 +181,8 @@ class ZeroStep {
       modules.forEach((module) => {
         destroyRunner = destroyRunner.then(() => {
           this._logger.info(`Destroying module ${module.name}`)
-          return module.destroy()
+          const ctx = this._buildContextForModule(module)
+          return module.destroy(ctx)
         }).catch((err) => {
           this._logger.error(`Error destroying ${module.name}: ${err.message}`)
           // No rethrow -> following modules might be able to shutdown in a clean way
@@ -197,6 +193,23 @@ class ZeroStep {
     }
 
     return this._destroyPromise
+  }
+
+  /**
+   * Build the context object for modules
+   * @param {*} module
+   * @return {ctx} context for given module
+   */
+  _buildContextForModule(module) {
+    const ctx = {
+      logger: this._config.loggerCb(module.name),
+    }
+
+    if (module.imports) {
+      module.imports.forEach((imp) => ctx[imp] = this._services.get(imp))
+    }
+
+    return ctx
   }
 }
 
