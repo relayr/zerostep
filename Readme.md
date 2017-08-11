@@ -85,12 +85,14 @@ Create a new instance.
 ### ZeroStep.prototype.register(module)
 - module must have a *name* attribute and the methods *init* and *destroy*
   - *name*: string with the name of the module
-  - *init*: is called to initialize the module with a context object and must return a non null/undefined value if optional *export* attribute is set
-  - *destroy*: is called to destroy the module
+  - *init*: is called to initialize the module with its context object and must return a non null/undefined value if optional *export* attribute is set
+  - *destroy*: is called to destroy the module with its context object
 - module has optional attributes
   - *export*: string which names the value returned by init
   - *imports*: an array of string names which named exports of other modules should be importet.
     _IMPORTANT: every name must have been registered in an *export* attribute before_
+
+*Note* The context object for init/destroy is created on the fly and does not retain state/modifications
 
 ### ZeroStep.prototype.init() -> Promise
 Initialize all registered modules in the order of their registration.

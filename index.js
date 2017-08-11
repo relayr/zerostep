@@ -180,8 +180,9 @@ class ZeroStep {
 
       modules.forEach((module) => {
         destroyRunner = destroyRunner.then(() => {
-          this._logger.info(`Destroying module ${module.name}`)
+          this._logger.info(`Destroying module ${module.name} - destroying`)
           const ctx = this._buildContextForModule(module)
+          this._logger.info(`Destroying module ${module.name} - destroyed`)
           return module.destroy(ctx)
         }).catch((err) => {
           this._logger.error(`Error destroying ${module.name}: ${err.message}`)
@@ -189,7 +190,7 @@ class ZeroStep {
         })
       })
 
-      this._destroyPromise = destroyRunner
+      this._destroyPromise = destroyRunner.then(() => this._logger.info('Destroyed all modules'))
     }
 
     return this._destroyPromise
