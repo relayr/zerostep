@@ -1,7 +1,7 @@
 {
   "name": "zerostep",
   "version": "0.0.1",
-  "description": "Manage lifecycle and provide a framework for initializing/destroying modules",
+  "description": "ZeroStep is a small library to wire modules and manage their lifecycles",
   "main": "index.js",
   "scripts": {
     "test": "eslint index.js spec/*.js && mocha spec/*.js",
@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/relayr/zerostep/issues"
   },
-  "homepage": "https://github.com/relayr/zerostep#readme",
+  "homepage": "https://github.com/relayr/zerostep#Readme.md",
   "devDependencies": {
     "chai": "4.1.1",
     "eslint": "4.4.1",
