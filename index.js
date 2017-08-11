@@ -50,8 +50,8 @@ class ZeroStep {
       throw new Error(`Refusing to register module ${module.name} w/o init method`)
     }
 
-    if (!module.hasOwnProperty('destroy') && !(typeof module.destroy === 'function')) {
-      throw new Error(`Refusing to register module ${module.name} w/o destroy method`)
+    if (module.hasOwnProperty('destroy') && !(typeof module.destroy === 'function')) {
+      throw new Error(`Refusing to register module ${module.name} with non function as destroy attribute`)
     }
 
     if (module.hasOwnProperty('export') && !(typeof module.export === 'string')) {
@@ -180,12 +180,15 @@ class ZeroStep {
 
       modules.forEach((module) => {
         destroyRunner = destroyRunner.then(() => {
-          this._logger.info(`Destroying module ${module.name} - destroying`)
-          const ctx = this._buildContextForModule(module)
-          const exp = this._services.has(module.export) ? this._services.get(module.export) : undefined
-          return module.destroy(ctx, exp)
+          if (module.destroy) {
+            this._logger.info(`Destroying module ${module.name}`)
+            const ctx = this._buildContextForModule(module)
+            const exp = this._services.has(module.export) ? this._services.get(module.export) : undefined
+            return module.destroy(ctx, exp)
+          } else {
+            this._logger.info(`Module ${module.name} did not provide destroy method - nothing to do`)
+          }
         })
-        .then(() => this._logger.info(`Destroying module ${module.name} - destroyed`))
         .catch((err) => {
           this._logger.error(`Error destroying ${module.name}: ${err.message}`)
           // No rethrow -> following modules might be able to shutdown in a clean way

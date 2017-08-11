@@ -83,9 +83,9 @@ describe('ZeroStep interaction with modules', () => {
     expect(core.register.bind(core, ({name: 'module w/o init'}))).to.throw()
   })
 
-  it('should be an error to register a module w/o a destroy method', () => {
+  it('should be an error to register a module with a destroy attribute which is not a function', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
-    expect(core.register.bind(core, ({name: 'module w/o destroy', init: () => true}))).to.throw()
+    expect(core.register.bind(core, ({name: 'module with non function destroy', init: () => true, destroy: true}))).to.throw()
   })
 
 
