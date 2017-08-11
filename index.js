@@ -182,9 +182,11 @@ class ZeroStep {
         destroyRunner = destroyRunner.then(() => {
           this._logger.info(`Destroying module ${module.name} - destroying`)
           const ctx = this._buildContextForModule(module)
-          this._logger.info(`Destroying module ${module.name} - destroyed`)
-          return module.destroy(ctx)
-        }).catch((err) => {
+          const exp = this._services.has(module.export) ? this._services.get(module.export) : undefined
+          return module.destroy(ctx, exp)
+        })
+        .then(() => this._logger.info(`Destroying module ${module.name} - destroyed`))
+        .catch((err) => {
           this._logger.error(`Error destroying ${module.name}: ${err.message}`)
           // No rethrow -> following modules might be able to shutdown in a clean way
         })
