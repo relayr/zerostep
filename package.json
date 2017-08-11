@@ -1,0 +1,33 @@
+{
+  "name": "zerostep",
+  "version": "0.0.1",
+  "description": "Manage lifecycle and provide a framework for initializing/destroying modules",
+  "main": "index.js",
+  "scripts": {
+    "test": "eslint index.js spec/*.js && mocha spec/*.js",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -- -u exports -R spec spec/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/relayr/zerostep.git"
+  },
+  "keywords": [
+    "module",
+    "lifecycle",
+    "component"
+  ],
+  "author": "Wolfram Fischer <wolfram.fischer@relayr.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/relayr/zerostep/issues"
+  },
+  "homepage": "https://github.com/relayr/zerostep#readme",
+  "devDependencies": {
+    "chai": "4.1.1",
+    "eslint": "4.4.1",
+    "eslint-config-google": "0.9.1",
+    "istanbul": "0.4.5",
+    "mocha": "3.5.0",
+    "sinon": "3.2.0"
+  }
+}
