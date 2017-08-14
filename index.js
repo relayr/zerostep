@@ -107,11 +107,15 @@ class ZeroStep {
        */
       const buildInitChain = (promise, modules, undoList, moduleNames) => {
         if (modules.length === 0) {
-          return promise.catch((err) => {
-            this._logger.error(`Could not initialize module ${moduleNames[undoList.length]}: ${err.message}, ${err.stack}`)
-            this._logger.error('Attempting to shutdown already initalized modules gracefully!')
-            this._shutDownModules(undoList.reverse())
-            throw err
+          return promise
+            .then(() => {
+              this._logger.info(`Initialization of all registered modules completed successfully for <${this.name}>`)
+            })
+            .catch((err) => {
+              this._logger.error(`Could not initialize module ${moduleNames[undoList.length]}: ${err.message}, ${err.stack}`)
+              this._logger.error('Attempting to shutdown already initalized modules gracefully!')
+              this._shutDownModules(undoList.reverse())
+              throw err
           })
         } else {
           const module = modules.shift()
@@ -224,7 +228,7 @@ class ZeroStep {
         })
       })
 
-      this._destroyPromise = destroyRunner.then(() => this._logger.info('Destroyed all modules'))
+      this._destroyPromise = destroyRunner.then(() => this._logger.info(`Destroyed all modules for <${this.name}>`))
     }
 
     return this._destroyPromise
