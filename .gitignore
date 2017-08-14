@@ -43,3 +43,6 @@ tasks.json
 
 # Ignore visual studio code files
 .vscode/
+
+# Webstorm
+.idea

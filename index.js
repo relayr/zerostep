@@ -38,6 +38,7 @@ class ZeroStep {
    * modules will be initialized in the order in which they where registered, so order matters
    * ZeroStep creates a shallow copy of originalModule
    * @param {*} originalModule
+   * @return {ZeroStep} this - for chaining of register method calls
    */
   register(originalModule) {
     const module = Object.assign({}, originalModule)
@@ -80,7 +81,12 @@ class ZeroStep {
       }
     }
 
+    if (!module.destroy) {
+      module.destroy = (ctx, initValue) => Promise.resolve()
+    }
+
     this._modules.push(module)
+    return this
   }
 
   /**
@@ -107,13 +113,14 @@ class ZeroStep {
           const module = modules.shift()
           moduleNames.push(module.name)
           promise = promise.then(() => {
-            const ctx = this._buildContextForModule(module)
+            module.ctx = this._buildContextForModule(module)
             const imports = module.imports ? module.imports.join(', ') : ''
             const exports = module.export !== undefined ? module.export : ''
-            this._logger.info(`Initializing module ${module.name}(${imports}) -> [${exports}]`)
-            return module.init(ctx)
+            this._logger.info(`Initializing module <${module.name}>(${imports}) -> [${exports}]`)
+            return module.init(module.ctx)
           })
           .then((ex) => {
+            module.initValue = ex
             if (module.export) {
               if (ex !== undefined && ex != null) {
                 this._services.set(module.export, ex)
@@ -180,14 +187,8 @@ class ZeroStep {
 
       modules.forEach((module) => {
         destroyRunner = destroyRunner.then(() => {
-          if (module.destroy) {
-            this._logger.info(`Destroying module ${module.name}`)
-            const ctx = this._buildContextForModule(module)
-            const exp = this._services.has(module.export) ? this._services.get(module.export) : undefined
-            return module.destroy(ctx, exp)
-          } else {
-            this._logger.info(`Module ${module.name} did not provide destroy method - nothing to do`)
-          }
+          this._logger.info(`Destroying module ${module.name}`)
+          return module.destroy(module.ctx, module.initValue)
         })
         .catch((err) => {
           this._logger.error(`Error destroying ${module.name}: ${err.message}`)
