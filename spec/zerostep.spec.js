@@ -180,6 +180,38 @@ describe('ZeroStep interaction with modules', () => {
       .then(() => core.destroy())
   })
 
+  it('should provide the return value of init as the second argument to destroy for two different modules', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const knownObject1 = {
+      key: 'TestValue123',
+    }
+    const module1 = {
+      name: 'Test initValue 1',
+      init: () => knownObject1,
+      destroy: (ctx, initValue) => {
+        return expect(initValue).to.deep.equal(knownObject1)
+      },
+    }
+
+    const knownObject2 = {
+      key: 'TestValue321',
+    }
+    const module2 = {
+      name: 'Test initValue',
+      init: () => knownObject2,
+      destroy: (ctx, initValue) => {
+        return expect(initValue).to.deep.equal(knownObject2)
+      },
+    }
+
+
+    core
+      .register(module1)
+      .register(module2)
+    return core.init()
+      .then(() => core.destroy())
+  })
+
 
   it('should call destroy on two registered modules when core.destroy() is called', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
