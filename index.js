@@ -215,6 +215,7 @@ class ZeroStep {
         })
         .catch((err) => {
           this._logger.error(`Error destroying ${module.name}: ${err.message}`)
+          this._logger.error(err.stack)
           // No rethrow -> following modules might be able to shutdown in a clean way
         })
       })
