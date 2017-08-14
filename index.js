@@ -41,6 +41,10 @@ class ZeroStep {
    * @return {ZeroStep} this - for chaining of register method calls
    */
   register(originalModule) {
+    if (this._initPromise !== null) {
+      throw new Error(`Refusing to register a module ${originalModule.name} after ${this.name}.init() has been called`)
+    }
+
     const module = Object.assign({}, originalModule)
     // Basic sanity checks for modules order matters!
     if (!module.hasOwnProperty('name')) {
