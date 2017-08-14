@@ -158,6 +158,29 @@ class ZeroStep {
       this.destroy().catch((err) => this._logger.error(err)).then(() => process.exit(0))
     })
 
+    process.on('error', (err) => {
+      this._logger.error('error handler ... shutting down ')
+      this._logger.error(err)
+      this.destroy().catch((err) => this._logger.error(err)).then(() => process.exit(1))
+    })
+
+    process.on('uncaughtException', (err) => {
+      this._logger.error('uncaughtException handler ... shutting down ')
+      this._logger.error(err)
+      this.destroy().catch((err) => this._logger.error(err)).then(() => process.exit(2))
+    })
+
+    process.on('unhandledRejection', (err) => {
+      this._logger.error('unhandledRejection handler ... shutting down ')
+      this._logger.error(err)
+      this.destroy().catch((err) => this._logger.error(err)).then(() => process.exit(3))
+    })
+
+    process.on('disconnect', () => {
+      this._logger.info('disconnect handler ... shutting down ')
+      this.destroy().catch((err) => this._logger.error(err)).then(() => process.exit(2))
+    })
+
     // Take care of nodemon restart notification
     // Nodemon expects us to send SIGUSR2 again once we handled our cleanup
     // Do not exit - else nodemon won't restart the server w/o changes
