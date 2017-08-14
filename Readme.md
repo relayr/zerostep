@@ -142,4 +142,4 @@ See ZeroStep.prototype.initAsApplicationCore() if you want ZeroStep to take care
 Destroy all registered modules in the opposite order in which they where registered.
 
 ### ZeroStep.protoype.initAsApplicationCore() -> Promise
-Registers a handler for SIGINT, SIGTERM and SIGUSR2 which will call ZeroStep.prototype.destroy() and calls ZeroStep.prototype.init().
+Registers a handler for disconnect, uncaughtException, unhandledRejection, error, SIGINT, SIGTERM and SIGUSR2 which will call ZeroStep.prototype.destroy() and calls ZeroStep.prototype.init().
