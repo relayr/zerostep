@@ -117,7 +117,12 @@ This is almost always what you want!
 
 ## Documentation
 
-### ZeroStep constructor
+### ZeroStep.constructor(options)
+- You can provide the following options
+  - name -> Defaults to ZeroStep
+  - loggerCb -> (name) -> {info: (msg) -> void, error: (msg) -> void}
+  - env -> Array, defaults to process.env
+
 Create a new instance.
 
 ### ZeroStep.prototype.register(module) -> ZeroStep(this)

@@ -15,12 +15,14 @@ class ZeroStep {
         info: (msg) => console.log(`${name}:- ${msg}`),
         error: (msg) => console.error(`${name}:- ${msg}`),
       }),
+      env: process.env,
     }
 
     this._config = Object.assign(defaults, config)
 
     this.name = this._config.name
     this._logger = this._config.loggerCb(this._config.name)
+    this._env = this._config.env
 
     this._modules = []
 
@@ -242,6 +244,7 @@ class ZeroStep {
   _buildContextForModule(module) {
     const ctx = {
       logger: this._config.loggerCb(module.name),
+      env: Array.from(this._config.env),
     }
 
     if (module.imports) {
