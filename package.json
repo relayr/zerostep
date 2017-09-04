@@ -1,6 +1,6 @@
 {
   "name": "zerostep",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "ZeroStep is a small library to wire modules and manage their lifecycles",
   "main": "index.js",
   "scripts": {
