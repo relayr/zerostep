@@ -121,7 +121,7 @@ This is almost always what you want!
 - You can provide the following options
   - name -> Defaults to ZeroStep
   - loggerCb -> (name) -> {info: (msg) -> void, error: (msg) -> void}
-  - env -> Map, defaults to process.env
+  - env -> Object. Defaults to process.env.
 
 Create a new instance.
 
