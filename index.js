@@ -244,7 +244,7 @@ class ZeroStep {
   _buildContextForModule(module) {
     const ctx = {
       logger: this._config.loggerCb(module.name),
-      env: Array.from(this._config._env),
+      env: Array.from(this._env),
     }
 
     if (module.imports) {
