@@ -16,18 +16,18 @@ lifecycle of modules.
 
 ### Shortcuts
     'use strict'
-    
+
     const ZeroStep = require('../index')
-    
+
     const zs = new ZeroStep()
-    
+
     zs
       .register((() => {
         let secret = 'S3C43T'
         let obj = {
           destroy: () => console.log(`Destroying obj with secret:= ${secret}`),
         }
-    
+
         return {
           name: 'Secret and initValue usage in destroy',
           init: () => obj,
@@ -38,10 +38,10 @@ lifecycle of modules.
         name: 'Module which was added by chaining register calls!',
         init: () => console.log('Hello from chained module!'),
       })
-    
-    
+
+
     zs.init().then(() => zs.destroy())
-    
+
 Will print:
 
     ZeroStep:- Initializing module Secret and initValue usage in destroy() -> []
@@ -148,3 +148,12 @@ Destroy all registered modules in the opposite order in which they where registe
 
 ### ZeroStep.protoype.initAsApplicationCore() -> Promise
 Registers a handler for disconnect, uncaughtException, unhandledRejection, error, SIGINT, SIGTERM and SIGUSR2 which will call ZeroStep.prototype.destroy() and calls ZeroStep.prototype.init().
+
+## Contributing
+Pull requests are welcome.
+Please write tests for your changes & run npm test before making a pull request.
+
+## Contributors & Thanks
+Bernard Pletikosa - feedback on design and supporting ZeroStep from the start
+Jeff Hiltz - support and initiative to make ZeroStep open source
+relayr - allowing to open source ZeroStep
