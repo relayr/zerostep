@@ -329,6 +329,21 @@ describe('ZeroStep interaction with modules', () => {
         expect(err.message).to.equal('Module dummyModule broke contract and did not export service module1-service')
       })
   })
+
+  it('should fail if a module requires a config value which was not provided', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(), {config: [{name: 'variable', type: ZeroStep.STRING}], init: () => Promise.resolve()})
+
+    core.register(module1)
+
+    return core.init()
+      .then(() => {
+        throw new Error('Should never be here!')
+      })
+      .catch((err) => {
+        expect(err.message).to.equal('Module dummyModule needs environment variable <variable>')
+      })
+  })
 })
 
 

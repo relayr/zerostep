@@ -65,6 +65,10 @@ class ZeroStep {
       throw new Error(`Refusing to register module ${module.name} which has a non string type export attribute`)
     }
 
+    if (module.hasOwnProperty('config') && !(typeof module.config === 'object')) {
+      throw new Error(`Refusing to register module ${module.name} which has a non object type config attribute`)
+    }
+
     if (module.export) {
       if (this._registeredServices.has(module.export)) {
         throw new Error(
@@ -101,6 +105,24 @@ class ZeroStep {
    */
   init() {
     if (!this._initPromise) {
+      const validateRequiredConfigValuesAreInEnv = (modules, env) => {
+        const errors = []
+
+        modules
+          .filter((m) => m.hasOwnProperty('config'))
+          .forEach((m) => {
+            m.config.forEach((declaration) => {
+              if (env[declaration.name] === undefined || env[declaration.name] === null) {
+                errors.push(`Module ${m.name} needs environment variable <${declaration.name}>${declaration.hint ? declaration.hint : ''}`)
+              }
+            })
+          })
+        return errors
+      }
+
+
+
+
       /* The following algorithm builds a promise chain recursively with all registered modules.
        * Every module get's a context (ctx) with a logger and all imports.
        * The tricky part is to gracefully handle exceptions.
@@ -142,6 +164,13 @@ class ZeroStep {
           .then(() => undoList.push(module))
           return buildInitChain(promise, modules, undoList, moduleNames)
         }
+      }
+
+
+      const errors = validateRequiredConfigValuesAreInEnv(this._modules.slice(), this._env)
+      if (errors.length) {
+        this._initPromise = Promise.reject(new Error(errors.join('\n')))
+        return this._initPromise
       }
 
       this._initPromise = buildInitChain(Promise.resolve(), this._modules.slice(), [], [])
