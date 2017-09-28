@@ -332,7 +332,7 @@ describe('ZeroStep interaction with modules', () => {
 
   it('should fail if a module requires a config value which was not provided', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
-    const module1 = Object.assign(createDummyModule(), {config: [{name: 'variable', type: ZeroStep.STRING}], init: () => Promise.resolve()})
+    const module1 = Object.assign(createDummyModule(), {config: [{name: 'variable'}], init: () => Promise.resolve()})
 
     core.register(module1)
 
@@ -342,6 +342,24 @@ describe('ZeroStep interaction with modules', () => {
       })
       .catch((err) => {
         expect(err.message).to.equal('Module dummyModule needs environment variable <variable>')
+      })
+  })
+
+  it('should fail if a module requires a config value which was not provided', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {config: [{name: 'variable', hint: 'Your bank account please'}],
+      init: () => Promise.resolve()}
+    )
+
+    core.register(module1)
+
+    return core.init()
+      .then(() => {
+        throw new Error('Should never be here!')
+      })
+      .catch((err) => {
+        expect(err.message).to.equal('Module dummyModule needs environment variable <variable>: Your bank account please')
       })
   })
 })

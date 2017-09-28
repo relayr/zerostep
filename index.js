@@ -113,7 +113,9 @@ class ZeroStep {
           .forEach((m) => {
             m.config.forEach((declaration) => {
               if (env[declaration.name] === undefined || env[declaration.name] === null) {
-                errors.push(`Module ${m.name} needs environment variable <${declaration.name}>${declaration.hint ? declaration.hint : ''}`)
+                const msg = `Module ${m.name} needs environment variable <${declaration.name}>` +
+                            `${declaration.hint ? ': ' + declaration.hint : ''}`
+                errors.push(msg)
               }
             })
           })
