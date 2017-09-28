@@ -154,6 +154,7 @@ Pull requests are welcome.
 Please write tests for your changes & run npm test before making a pull request.
 
 ## Contributors & Thanks
-Bernard Pletikosa - feedback on design and supporting ZeroStep from the start
-Jeff Hiltz - support and initiative to make ZeroStep open source
-relayr - allowing to open source ZeroStep
+
+- Bernard Pletikosa - feedback on design and supporting ZeroStep from the start
+- Jeff Hiltz - support and initiative to make ZeroStep open source
+- relayr - allowing to open source ZeroStep
