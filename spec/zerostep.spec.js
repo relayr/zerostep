@@ -389,6 +389,20 @@ describe('ZeroStep interaction with modules', () => {
 
     return core.init()
   })
+
+  it('should use a provided value over the default and a default where non was provided', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig({variable: 'provided variable'}))
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'variable', default: 'testtesttest'}, {name: 'varWithDefault', default: 'defaultValue'}],
+      init: (ctx) => {
+        expect(ctx.env.variable).to.equal('provided variable')
+        expect(ctx.env.varWithDefault).to.equal('defaultValue')
+      }})
+
+    core.register(module1)
+
+    return core.init()
+  })
 })
 
 
