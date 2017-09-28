@@ -83,7 +83,7 @@ class ZeroStep {
           newDeclaration.default = envDeclaration.default
         }
 
-        newDeclaration.showValue = envDeclaration.showValue ? envDeclaration.showValue : true
+        newDeclaration.showValue = envDeclaration.showValue !== undefined ? envDeclaration.showValue : true
         newDeclaration.valid = envDeclaration.valid ? envDeclaration.valid : (() => true)
 
         return newDeclaration
