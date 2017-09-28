@@ -332,7 +332,7 @@ describe('ZeroStep interaction with modules', () => {
 
   it('should fail if a module requires a config value which was not provided', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
-    const module1 = Object.assign(createDummyModule(), {config: [{name: 'variable'}], init: () => Promise.resolve()})
+    const module1 = Object.assign(createDummyModule(), {env: [{name: 'variable'}], init: () => Promise.resolve()})
 
     core.register(module1)
 
@@ -348,7 +348,7 @@ describe('ZeroStep interaction with modules', () => {
   it('should fail if a module requires a config value which was not provided', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {config: [{name: 'variable', hint: 'Your bank account please'}],
+      {env: [{name: 'variable', hint: 'Your bank account please'}],
       init: () => Promise.resolve()}
     )
 
@@ -361,6 +361,19 @@ describe('ZeroStep interaction with modules', () => {
       .catch((err) => {
         expect(err.message).to.equal('Module dummyModule needs environment variable <variable>: Your bank account please')
       })
+  })
+
+  it('should use a default value if provided and the variable was not provided', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'variable', default: 'testtesttest'}],
+      init: (ctx) => {
+        expect(ctx.env.variable).to.equal('testtesttest')
+      }})
+
+    core.register(module1)
+
+    return core.init()
   })
 })
 

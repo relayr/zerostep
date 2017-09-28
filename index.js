@@ -65,8 +65,8 @@ class ZeroStep {
       throw new Error(`Refusing to register module ${module.name} which has a non string type export attribute`)
     }
 
-    if (module.hasOwnProperty('config') && !(typeof module.config === 'object')) {
-      throw new Error(`Refusing to register module ${module.name} which has a non object type config attribute`)
+    if (module.hasOwnProperty('env') && !Array.isArray(module.env)) {
+      throw new Error(`Refusing to register module ${module.name} which has a non object type env attribute`)
     }
 
     if (module.export) {
@@ -105,17 +105,21 @@ class ZeroStep {
    */
   init() {
     if (!this._initPromise) {
-      const validateRequiredConfigValuesAreInEnv = (modules, env) => {
+      const checkAndPrepareEnv = (modules, env) => {
         const errors = []
 
         modules
-          .filter((m) => m.hasOwnProperty('config'))
+          .filter((m) => m.hasOwnProperty('env'))
           .forEach((m) => {
-            m.config.forEach((declaration) => {
-              if (env[declaration.name] === undefined || env[declaration.name] === null) {
-                const msg = `Module ${m.name} needs environment variable <${declaration.name}>` +
-                            `${declaration.hint ? ': ' + declaration.hint : ''}`
-                errors.push(msg)
+            m.env.forEach((envDeclaration) => {
+              if ((env[envDeclaration.name] === undefined || env[envDeclaration.name] === null)) {
+                if (envDeclaration.default !== undefined) {
+                  env[envDeclaration.name] = envDeclaration.default
+                } else {
+                  const msg = `Module ${m.name} needs environment variable <${envDeclaration.name}>` +
+                              `${envDeclaration.hint ? ': ' + envDeclaration.hint : ''}`
+                  errors.push(msg)
+                }
               }
             })
           })
@@ -169,7 +173,7 @@ class ZeroStep {
       }
 
 
-      const errors = validateRequiredConfigValuesAreInEnv(this._modules.slice(), this._env)
+      const errors = checkAndPrepareEnv(this._modules.slice(), this._env)
       if (errors.length) {
         this._initPromise = Promise.reject(new Error(errors.join('\n')))
         return this._initPromise
