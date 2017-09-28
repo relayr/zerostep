@@ -476,6 +476,16 @@ describe('ZeroStep interaction with modules', () => {
     const msg = 'Refusing to register module dummyModule which has an env declaration with a non boolean showValue attribute'
     expect(() => core.register(module1)).to.throw(msg)
   })
+
+  it('should call the valid method with the actual env value on registering a module', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'var', default: 'myDefaultValue', valid: (val) => expect(val).to.equal('myDefaultValue')}],
+      init: () => Promise.resolve()}
+    )
+
+    return core.register(module1).init()
+  })
 })
 
 

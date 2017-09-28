@@ -165,7 +165,7 @@ class ZeroStep {
                   errors.push(msg)
                 }
               }
-              if (env[envDeclaration.name] && !envDeclaration.valid(env[envDeclaration])) {
+              if (env[envDeclaration.name] && !envDeclaration.valid(env[envDeclaration.name])) {
                 const msg = `Module ${m.name} has variable <${envDeclaration.name}> which was rejected by 'valid' predicate`
                 errors.push(msg)
               }
