@@ -421,6 +421,61 @@ describe('ZeroStep interaction with modules', () => {
         expect(err.message).to.equal('Module dummyModule has variable <variable> which was rejected by \'valid\' predicate')
       })
   })
+
+  it('should fail if a module provides a non function valid predicate', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'variable', default: 'value', valid: 'no function'}],
+      init: () => Promise.resolve()}
+    )
+
+    const msg = 'Refusing to register module dummyModule which has an env declaration with a non function valid attribute'
+    expect(() => core.register(module1)).to.throw(msg)
+  })
+
+  it('should fail if a module provides an env w/o name', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{}],
+      init: () => Promise.resolve()}
+    )
+
+    const msg = 'Refusing to register module dummyModule which has an env declaration w/o a string name attribute'
+    expect(() => core.register(module1)).to.throw(msg)
+  })
+
+  it('should fail if a module provides an env with a non string hint', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'var', hint: 555}],
+      init: () => Promise.resolve()}
+    )
+
+    const msg = 'Refusing to register module dummyModule which has an env declaration with a non string hint attribute'
+    expect(() => core.register(module1)).to.throw(msg)
+  })
+
+  it('should fail if a module provides an env with a non string or number default', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'var', default: {}}],
+      init: () => Promise.resolve()}
+    )
+
+    const msg = 'Refusing to register module dummyModule which has an env declaration with a non string/number default attribute'
+    expect(() => core.register(module1)).to.throw(msg)
+  })
+
+  it('should fail if a module provides an env with a non boolean showValue attribute', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'var', showValue: 'hello'}],
+      init: () => Promise.resolve()}
+    )
+
+    const msg = 'Refusing to register module dummyModule which has an env declaration with a non boolean showValue attribute'
+    expect(() => core.register(module1)).to.throw(msg)
+  })
 })
 
 

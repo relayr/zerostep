@@ -66,13 +66,49 @@ class ZeroStep {
     }
 
     if (module.hasOwnProperty('env') && !Array.isArray(module.env)) {
-      throw new Error(`Refusing to register module ${module.name} which has a non object type env attribute`)
+      throw new Error(`Refusing to register module ${module.name} which has a non array type env attribute`)
     }
 
     if (module.env) {
+      // Make a deep copy because we will enhance env
+      module.env = module.env.map((envDeclaration) => {
+        const newDeclaration = {
+          name: envDeclaration.name,
+        }
+
+        if (envDeclaration.hint) {
+          newDeclaration.hint = envDeclaration.hint
+        }
+        if (envDeclaration.default) {
+          newDeclaration.default = envDeclaration.default
+        }
+
+        newDeclaration.showValue = envDeclaration.showValue ? envDeclaration.showValue : true
+        newDeclaration.valid = envDeclaration.valid ? envDeclaration.valid : (() => true)
+
+        return newDeclaration
+      })
       module.env.forEach((envDeclaration) => {
-        if (envDeclaration.valid === undefined) {
-          envDeclaration.valid = () => true
+        if (!(envDeclaration.hasOwnProperty('name') && (typeof envDeclaration.name === 'string'))) {
+          throw new Error(`Refusing to register module ${module.name} which has an env declaration w/o a string name attribute`)
+        }
+        if (envDeclaration.hasOwnProperty('hint') && (typeof envDeclaration.hint !== 'string')) {
+          throw new Error(`Refusing to register module ${module.name} which has an env declaration with a non string hint attribute`)
+        }
+        if (
+          envDeclaration.hasOwnProperty('default') &&
+          !(
+            (typeof envDeclaration.default === 'string') ||
+            (typeof envDeclaration.default === 'number')
+          )) {
+          const msg = `Refusing to register module ${module.name} which has an env declaration with a non string/number default attribute`
+          throw new Error(msg)
+        }
+        if (typeof envDeclaration.valid !== 'function') {
+          throw new Error(`Refusing to register module ${module.name} which has an env declaration with a non function valid attribute`)
+        }
+        if (typeof envDeclaration.showValue !== 'boolean') {
+          throw new Error(`Refusing to register module ${module.name} which has an env declaration with a non boolean showValue attribute`)
         }
       })
     }
