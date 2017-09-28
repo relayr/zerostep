@@ -69,6 +69,13 @@ class ZeroStep {
       throw new Error(`Refusing to register module ${module.name} which has a non object type env attribute`)
     }
 
+    if (module.env) {
+      module.env.forEach((envDeclaration) => {
+        if (envDeclaration.valid === undefined) {
+          envDeclaration.valid = () => true
+        }
+      })
+    }
     if (module.export) {
       if (this._registeredServices.has(module.export)) {
         throw new Error(
@@ -120,6 +127,10 @@ class ZeroStep {
                               `${envDeclaration.hint ? ': ' + envDeclaration.hint : ''}`
                   errors.push(msg)
                 }
+              }
+              if (env[envDeclaration.name] && !envDeclaration.valid(env[envDeclaration])) {
+                const msg = `Module ${m.name} has variable <${envDeclaration.name}> which was rejected by 'valid' predicate`
+                errors.push(msg)
               }
             })
           })

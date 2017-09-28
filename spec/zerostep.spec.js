@@ -331,7 +331,7 @@ describe('ZeroStep interaction with modules', () => {
       })
   })
 
-  it('should fail if a module requires a config value which was not provided', () => {
+  it('should fail if a module requires an env value which was not provided', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(), {env: [{name: 'variable'}], init: () => Promise.resolve()})
 
@@ -346,7 +346,7 @@ describe('ZeroStep interaction with modules', () => {
       })
   })
 
-  it('should fail if a module requires a config value which was not provided', () => {
+  it('should fail with a hint if a module requires an env value which was not provided', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
       {env: [{name: 'variable', hint: 'Your bank account please'}],
@@ -402,6 +402,24 @@ describe('ZeroStep interaction with modules', () => {
     core.register(module1)
 
     return core.init()
+  })
+
+  it('should fail if a module provides a valid predicate for an env variable which returns false', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig())
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'variable', default: 'value', valid: () => false}],
+      init: () => Promise.resolve()}
+    )
+
+    core.register(module1)
+
+    return core.init()
+      .then(() => {
+        throw new Error('Should never be here!')
+      })
+      .catch((err) => {
+        expect(err.message).to.equal('Module dummyModule has variable <variable> which was rejected by \'valid\' predicate')
+      })
   })
 })
 
