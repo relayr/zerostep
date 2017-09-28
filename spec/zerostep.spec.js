@@ -25,11 +25,12 @@ const createFaultyInitModule = () => {
   }
 }
 
-const createDefaultZeroStepConfig = () => ({
+const createDefaultZeroStepConfig = (env = {}) => ({
   loggerCb: () => ({
     info: () => true,
     error: () => true,
   }),
+  env: env,
 })
 
 describe('canary test', function() {
@@ -369,6 +370,19 @@ describe('ZeroStep interaction with modules', () => {
       {env: [{name: 'variable', default: 'testtesttest'}],
       init: (ctx) => {
         expect(ctx.env.variable).to.equal('testtesttest')
+      }})
+
+    core.register(module1)
+
+    return core.init()
+  })
+
+  it('should use a provided value over the default', () => {
+    const core = new ZeroStep(createDefaultZeroStepConfig({variable: 'provided variable'}))
+    const module1 = Object.assign(createDummyModule(),
+      {env: [{name: 'variable', default: 'testtesttest'}],
+      init: (ctx) => {
+        expect(ctx.env.variable).to.equal('provided variable')
       }})
 
     core.register(module1)
