@@ -161,6 +161,7 @@ class ZeroStep {
                 } else {
                   const msg = `Module ${m.name} needs environment variable <${envDeclaration.name}>` +
                               `${envDeclaration.hint ? ': ' + envDeclaration.hint : ''}`
+                  this._logger.error(msg)
                   errors.push(msg)
                 }
               }
@@ -173,7 +174,20 @@ class ZeroStep {
         return errors
       }
 
+      const collectEnvReport = (modules, env)=> {
+        const report = []
 
+        modules
+          .filter((m) => m.hasOwnProperty('env'))
+          .forEach((m) => {
+            m.env.forEach((envDeclaration) => {
+              const value = envDeclaration.showValue ? env[envDeclaration.name] : '**** NOT SHOWN ****'
+              report.push(`Module ${m.name} env[${envDeclaration.name}] := <${value}>`)
+            })
+          })
+
+        return report
+      }
 
 
       /* The following algorithm builds a promise chain recursively with all registered modules.
@@ -225,6 +239,8 @@ class ZeroStep {
         this._initPromise = Promise.reject(new Error(errors.join('\n')))
         return this._initPromise
       }
+
+      collectEnvReport(this._modules.slice(), this._env).forEach((l) => this._logger.info(l))
 
       this._initPromise = buildInitChain(Promise.resolve(), this._modules.slice(), [], [])
     }
