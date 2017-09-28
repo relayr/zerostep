@@ -72,7 +72,40 @@ Will print:
     ZeroStep:- Destroying module hello-world
     goodbye, world
 
-## Two modules
+### Usage of declarative env attribute
+
+    const ZeroStep = require('../index.js')
+
+    const zs = new ZeroStep()
+
+    zs.register({
+      name: 'hello-world',
+      env: [
+        {
+          name: 'message',
+          // optional attributes
+          default: 'Hello, world!',
+          valid: (value) => value === 'Hello, world!',
+          showValue: true,
+          hint: 'Please provide a message to display to the user'
+        }
+      ],
+      init: (ctx) => console.log(ctx.env.message),
+    })
+
+    zs.init().then(() => zs.destroy())
+
+Will print:
+
+    ZeroStep:- Module hello-world env[message] := <Hello, world!>
+    ZeroStep:- Initializing module <hello-world>() -> []
+    Hello, world!
+    ZeroStep:- Initialization of all registered modules completed successfully for <ZeroStep>
+    ZeroStep:- Destroying module hello-world
+    ZeroStep:- Destroyed all modules for <ZeroStep>
+
+
+### Two modules
 
     const ZeroStep = require('zerostep')
 
@@ -126,14 +159,23 @@ This is almost always what you want!
 Create a new instance.
 
 ### ZeroStep.prototype.register(module) -> ZeroStep(this)
-- module must have a *name* attribute and the methods *init* and *destroy*
-  - *name*: string with the name of the module
-  - *init*: is called to initialize the module with its context object and must return a non null/undefined value if optional *export* attribute is set
-  - *destroy*: is called to destroy the module with its context object as first and the return value of its init method as second argument
+- module must have a *name* attribute and the method attribute *init*
+  - *name* (string): name of the module
+  - *init* ((ctx) => {}) : is called to initialize the module with its context object and must return a non null/undefined value if optional *export* attribute is set
 - module has optional attributes
+  - *env* ([envDeclarations*]): a list which declares what environment variables this module needs
+    - must have attributes
+      - *name* (string): name of the environment variable
+    - optional attributes
+      - *hint* (string): helpful hint to be displayed when the environment variable is not set
+      - *valid* ((value) => boolean): valid is called with the actual value of the environment variable and must return true if the value is valid
+      - *default* (string|number): default value to be used if the environment variable is not provided
+      - *showValue* (boolean): show the actual value of the environment variable which will be provided to the module (defaults to true)
   - *export*: string which names the value returned by init
   - *imports*: an array of string names which named exports of other modules should be importet.
     _IMPORTANT: every name must have been registered in an *export* attribute before_
+  - *destroy*: is called to destroy the module with its context object as first and the return value of its init method as second argument
+
 
 *Note* The context object for init/destroy is created once for the init method and provided to the destroy method
 *Note* You can get a handle to destroy an object by just returning it from init - it will be provided to destroy w/o a need to export it
