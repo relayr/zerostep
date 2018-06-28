@@ -6,8 +6,8 @@ const zs = new ZeroStep()
 
 zs
   .register((() => {
-    let secret = 'S3C43T'
-    let obj = {
+    const secret = 'S3C43T'
+    const obj = {
       destroy: () => console.log(`Destroying obj with secret:= ${secret}`),
     }
 

@@ -1,11 +1,12 @@
 {
   "name": "zerostep",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "description": "ZeroStep is a small library to wire modules and manage their lifecycles",
   "main": "index.js",
   "scripts": {
-    "test": "mocha spec/*.js && eslint index.js spec/*.js",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -- -u exports -R spec spec/*.spec.js"
+    "lint": "node ./node_modules/.bin/eslint --ignore-path .gitignore --ext js .",
+    "test": "npm run coverage && npm run lint",
+    "coverage": "multi='mocha-junit-reporter=test-results.xml spec=-' nyc -r cobertura -r lcov -r text mocha --reporter mocha-multi --exit"
   },
   "repository": {
     "type": "git",
@@ -16,18 +17,20 @@
     "lifecycle",
     "component"
   ],
-  "author": "Wolfram Fischer <wolfram.fischer@relayr.de>",
+  "author": "Wolfram Fischer",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/relayr/zerostep/issues"
   },
   "homepage": "https://github.com/relayr/zerostep#Readme.md",
   "devDependencies": {
-    "chai": "4.1.1",
-    "eslint": "4.4.1",
+    "chai": "4.1.2",
+    "eslint": "^5.0.1",
     "eslint-config-google": "0.9.1",
-    "istanbul": "0.4.5",
-    "mocha": "3.5.0",
-    "sinon": "3.2.0"
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi": "^1.0.1",
+    "nyc": "^11.6.0",
+    "sinon": "^6.0.1"
   }
 }

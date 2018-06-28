@@ -46,3 +46,5 @@ tasks.json
 
 # Webstorm
 .idea
+/.nyc_output/
+/test-results.xml
