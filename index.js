@@ -12,7 +12,9 @@ class ZeroStep {
     const defaults = {
       name: 'ZeroStep',
       loggerCb: (name) => ({
+        // eslint-disable-next-line no-console
         info: (msg) => console.log(`${name}:- ${msg}`),
+        // eslint-disable-next-line no-console
         error: (msg) => console.error(`${name}:- ${msg}`),
       }),
       env: process.env,
