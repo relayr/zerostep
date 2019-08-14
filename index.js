@@ -193,10 +193,10 @@ class ZeroStep {
 
 
       /* The following algorithm builds a promise chain recursively with all registered modules.
-       * Every module get's a context (ctx) with a logger and all imports.
+       * Every module gets a context (ctx) with a logger and all imports.
        * The tricky part is to gracefully handle exceptions.
        * If you have modules a,b and c in that order and b throws an exception the exception should
-       * be reportet and a.destroy() must be called (because it already has been successfully initialized)
+       * be reported and a.destroy() must be called (because it already has been successfully initialized)
        */
       const buildInitChain = (promise, modules, undoList, moduleNames) => {
         if (modules.length === 0) {
@@ -206,7 +206,7 @@ class ZeroStep {
             })
             .catch((err) => {
               this._logger.error(`Could not initialize module ${moduleNames[undoList.length]}: ${err.message}, ${err.stack}`)
-              this._logger.error('Attempting to shutdown already initalized modules gracefully!')
+              this._logger.error('Attempting to shutdown already initialized modules gracefully!')
               this._shutDownModules(undoList.reverse())
               throw err
           })
@@ -326,6 +326,7 @@ class ZeroStep {
         .catch((err) => {
           this._logger.error(`Error destroying ${module.name}: ${err.message}`)
           this._logger.error(err.stack)
+          process.exit(1)
           // No rethrow -> following modules might be able to shutdown in a clean way
         })
       })
