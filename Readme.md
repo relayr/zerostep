@@ -1,12 +1,13 @@
 # zerostep
-ZeroStep is a small library to organize, wire and manage the
-lifecycle of modules.
+
+ZeroStep is a small library to organize, wire and manage the lifecycle of modules.
 
 ## Features
+
 - Initialize and destroy modules
 - Import and export services from modules
 - Check imports/exports at registration time
-- Take care of process signals for SIGTERM, SIGINT and SIGUSR2 if whished
+- Take care of process signals for SIGTERM, SIGINT and SIGUSR2 if wished
 - Plays nice with nodemon
 - Zero dependencies
 - Promise based
