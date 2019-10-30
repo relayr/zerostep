@@ -162,7 +162,7 @@ class ZeroStep {
                   env[envDeclaration.name] = envDeclaration.default
                 } else {
                   const msg = `Module ${m.name} needs environment variable <${envDeclaration.name}>` +
-                              `${envDeclaration.hint ? ': ' + envDeclaration.hint : ''}`
+                    `${envDeclaration.hint ? ': ' + envDeclaration.hint : ''}`
                   this._logger.error(msg)
                   errors.push(msg)
                 }
@@ -176,7 +176,7 @@ class ZeroStep {
         return errors
       }
 
-      const collectEnvReport = (modules, env)=> {
+      const collectEnvReport = (modules, env) => {
         const report = []
 
         modules
@@ -209,7 +209,7 @@ class ZeroStep {
               this._logger.error('Attempting to shutdown already initialized modules gracefully!')
               this._shutDownModules(undoList.reverse())
               throw err
-          })
+            })
         } else {
           const module = modules.shift()
           moduleNames.push(module.name)
@@ -271,18 +271,21 @@ class ZeroStep {
     process.on('error', (err) => {
       this._logger.error('error handler ... shutting down ')
       this._logger.error(err)
+      this._logger.error(err.stack)
       this.destroy().catch((err) => this._logger.error(err)).then(() => process.exit(1))
     })
 
     process.on('uncaughtException', (err) => {
       this._logger.error('uncaughtException handler ... shutting down ')
       this._logger.error(err)
+      this._logger.error(err.stack)
       this.destroy().catch((err) => this._logger.error(err)).then(() => process.exit(2))
     })
 
     process.on('unhandledRejection', (err) => {
       this._logger.error('unhandledRejection handler ... shutting down ')
       this._logger.error(err)
+      this._logger.error(err.stack)
       this.destroy().catch((err) => this._logger.error(err)).then(() => process.exit(3))
     })
 
@@ -323,12 +326,13 @@ class ZeroStep {
           this._logger.info(`Destroying module ${module.name}`)
           return module.destroy(module.ctx, module.initValue)
         })
-        .catch((err) => {
-          this._logger.error(`Error destroying ${module.name}: ${err.message}`)
-          this._logger.error(err.stack)
-          process.exit(1)
-          // No rethrow -> following modules might be able to shutdown in a clean way
-        })
+          .catch((err) => {
+            this._logger.error(`Error destroying ${module.name}: ${err.message}`)
+            this._logger.error(err)
+            this._logger.error(err.stack)
+            process.exit(1)
+            // No rethrow -> following modules might be able to shutdown in a clean way
+          })
       })
 
       this._destroyPromise = destroyRunner.then(() => this._logger.info(`Destroyed all modules for <${this.name}>`))

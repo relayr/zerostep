@@ -1,6 +1,6 @@
 {
   "name": "zerostep",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "ZeroStep is a small library to wire modules and manage their lifecycles",
   "main": "index.js",
   "scripts": {
@@ -23,10 +23,10 @@
   },
   "homepage": "https://github.com/relayr/zerostep#Readme.md",
   "devDependencies": {
-    "chai": "4.1.1",
+    "chai": "4.2.0",
     "eslint-config-relayr": "1.4.0",
     "istanbul": "0.4.5",
-    "mocha": "^6.1.4",
-    "sinon": "3.2.0"
+    "mocha": "^6.2.2",
+    "sinon": "^7.5.0"
   }
 }
