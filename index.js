@@ -330,7 +330,6 @@ class ZeroStep {
             this._logger.error(`Error destroying ${module.name}: ${err.message}`)
             this._logger.error(err)
             this._logger.error(err.stack)
-            process.exit(1)
             // No rethrow -> following modules might be able to shutdown in a clean way
           })
       })
