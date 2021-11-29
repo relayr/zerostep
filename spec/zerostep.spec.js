@@ -21,7 +21,9 @@ const createFaultyInitModule = () => {
     init: () => {
       throw new Error('I am faulty!')
     },
-    destroy: () => Promise.reject('Should not be possible to call me!'),
+    destroy: () => {
+      throw new Error('Should not be possible to call me!')
+    },
   }
 }
 
@@ -86,7 +88,11 @@ describe('ZeroStep interaction with modules', () => {
 
   it('should be an error to register a module with a destroy attribute which is not a function', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
-    expect(core.register.bind(core, ({name: 'module with non function destroy', init: () => true, destroy: true}))).to.throw()
+    expect(core.register.bind(core, ({
+      name: 'module with non function destroy',
+      init: () => true,
+      destroy: true
+    }))).to.throw()
   })
 
 
@@ -158,9 +164,9 @@ describe('ZeroStep interaction with modules', () => {
     return core.init()
       .then(() => core.destroy())
       .then(() => {
-        return expect(stub.calledOnce).to.be.true
-      }
-    )
+          return expect(stub.calledOnce).to.be.true
+        }
+      )
   })
 
   it('should provide the return value of init as the second argument to destroy', () => {
@@ -231,12 +237,12 @@ describe('ZeroStep interaction with modules', () => {
     return core.init()
       .then(() => core.destroy())
       .then(() => {
-        // Test for reverse order in destroy
-        expect(stub1.calledBefore(stub2)).to.be.false
-        expect(stub1.calledOnce).to.be.true
-        expect(stub2.calledOnce).to.be.true
-      }
-    )
+          // Test for reverse order in destroy
+          expect(stub1.calledBefore(stub2)).to.be.false
+          expect(stub1.calledOnce).to.be.true
+          expect(stub2.calledOnce).to.be.true
+        }
+      )
   })
 
   it('should call destroy on three registered modules when core.destroy() is called', () => {
@@ -261,14 +267,14 @@ describe('ZeroStep interaction with modules', () => {
     return core.init()
       .then(() => core.destroy())
       .then(() => {
-        // Test for reverse order in destroy
-        expect(stub1.calledBefore(stub2)).to.be.false
+          // Test for reverse order in destroy
+          expect(stub1.calledBefore(stub2)).to.be.false
 
-        expect(stub1.calledOnce).to.be.true
-        expect(stub2.calledOnce).to.be.true
-        expect(stub3.calledOnce).to.be.true
-      }
-    )
+          expect(stub1.calledOnce).to.be.true
+          expect(stub2.calledOnce).to.be.true
+          expect(stub3.calledOnce).to.be.true
+        }
+      )
   })
 
 
@@ -294,20 +300,21 @@ describe('ZeroStep interaction with modules', () => {
     return core.init()
       .catch((err) => true)
       .then(() => {
-        expect(dummyInit.calledOnce).to.be.true
-        expect(dummyDestroy.calledOnce).to.be.true
-        expect(faultyInit.calledOnce).to.be.true
-        expect(faultyDestroy.calledOnce).to.be.false
-      }
-    )
+          expect(dummyInit.calledOnce).to.be.true
+          expect(dummyDestroy.calledOnce).to.be.true
+          expect(faultyInit.calledOnce).to.be.true
+          expect(faultyDestroy.calledOnce).to.be.false
+        }
+      )
   })
 
   it('should be possible to import a service from module1 in module2', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(), {export: 'module1-service', init: () => 'ice cream'})
     const module2 = Object.assign(createDummyModule(), {
-      imports: ['module1-service'],
-      init: (ctx) => expect(ctx['module1-service']).to.equal('ice cream')}
+        imports: ['module1-service'],
+        init: (ctx) => expect(ctx['module1-service']).to.equal('ice cream')
+      }
     )
 
     core.register(module1)
@@ -349,8 +356,10 @@ describe('ZeroStep interaction with modules', () => {
   it('should fail with a hint if a module requires an env value which was not provided', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'variable', hint: 'Your bank account please'}],
-      init: () => Promise.resolve()}
+      {
+        env: [{name: 'variable', hint: 'Your bank account please'}],
+        init: () => Promise.resolve()
+      }
     )
 
     core.register(module1)
@@ -367,10 +376,12 @@ describe('ZeroStep interaction with modules', () => {
   it('should use a default value if provided and the variable was not provided', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'variable', default: 'testtesttest'}],
-      init: (ctx) => {
-        expect(ctx.env.variable).to.equal('testtesttest')
-      }})
+      {
+        env: [{name: 'variable', default: 'testtesttest'}],
+        init: (ctx) => {
+          expect(ctx.env.variable).to.equal('testtesttest')
+        }
+      })
 
     core.register(module1)
 
@@ -380,10 +391,12 @@ describe('ZeroStep interaction with modules', () => {
   it('should use a provided value over the default', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig({variable: 'provided variable'}))
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'variable', default: 'testtesttest'}],
-      init: (ctx) => {
-        expect(ctx.env.variable).to.equal('provided variable')
-      }})
+      {
+        env: [{name: 'variable', default: 'testtesttest'}],
+        init: (ctx) => {
+          expect(ctx.env.variable).to.equal('provided variable')
+        }
+      })
 
     core.register(module1)
 
@@ -393,11 +406,13 @@ describe('ZeroStep interaction with modules', () => {
   it('should use a provided value over the default and a default where non was provided', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig({variable: 'provided variable'}))
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'variable', default: 'testtesttest'}, {name: 'varWithDefault', default: 'defaultValue'}],
-      init: (ctx) => {
-        expect(ctx.env.variable).to.equal('provided variable')
-        expect(ctx.env.varWithDefault).to.equal('defaultValue')
-      }})
+      {
+        env: [{name: 'variable', default: 'testtesttest'}, {name: 'varWithDefault', default: 'defaultValue'}],
+        init: (ctx) => {
+          expect(ctx.env.variable).to.equal('provided variable')
+          expect(ctx.env.varWithDefault).to.equal('defaultValue')
+        }
+      })
 
     core.register(module1)
 
@@ -407,8 +422,10 @@ describe('ZeroStep interaction with modules', () => {
   it('should fail if a module provides a valid predicate for an env variable which returns false', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'variable', default: 'value', valid: () => false}],
-      init: () => Promise.resolve()}
+      {
+        env: [{name: 'variable', default: 'value', valid: () => false}],
+        init: () => Promise.resolve()
+      }
     )
 
     core.register(module1)
@@ -425,8 +442,10 @@ describe('ZeroStep interaction with modules', () => {
   it('should fail if a module provides a non function valid predicate', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'variable', default: 'value', valid: 'no function'}],
-      init: () => Promise.resolve()}
+      {
+        env: [{name: 'variable', default: 'value', valid: 'no function'}],
+        init: () => Promise.resolve()
+      }
     )
 
     const msg = 'Refusing to register module dummyModule which has an env declaration with a non function valid attribute'
@@ -436,8 +455,10 @@ describe('ZeroStep interaction with modules', () => {
   it('should fail if a module provides an env w/o name', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{}],
-      init: () => Promise.resolve()}
+      {
+        env: [{}],
+        init: () => Promise.resolve()
+      }
     )
 
     const msg = 'Refusing to register module dummyModule which has an env declaration w/o a string name attribute'
@@ -447,8 +468,10 @@ describe('ZeroStep interaction with modules', () => {
   it('should fail if a module provides an env with a non string hint', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'var', hint: 555}],
-      init: () => Promise.resolve()}
+      {
+        env: [{name: 'var', hint: 555}],
+        init: () => Promise.resolve()
+      }
     )
 
     const msg = 'Refusing to register module dummyModule which has an env declaration with a non string hint attribute'
@@ -458,8 +481,10 @@ describe('ZeroStep interaction with modules', () => {
   it('should fail if a module provides an env with a non string or number default', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'var', default: {}}],
-      init: () => Promise.resolve()}
+      {
+        env: [{name: 'var', default: {}}],
+        init: () => Promise.resolve()
+      }
     )
 
     const msg = 'Refusing to register module dummyModule which has an env declaration with a non string/number default attribute'
@@ -469,8 +494,10 @@ describe('ZeroStep interaction with modules', () => {
   it('should fail if a module provides an env with a non boolean showValue attribute', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'var', showValue: 'hello'}],
-      init: () => Promise.resolve()}
+      {
+        env: [{name: 'var', showValue: 'hello'}],
+        init: () => Promise.resolve()
+      }
     )
 
     const msg = 'Refusing to register module dummyModule which has an env declaration with a non boolean showValue attribute'
@@ -480,8 +507,10 @@ describe('ZeroStep interaction with modules', () => {
   it('should call the valid method with the actual env value on registering a module', () => {
     const core = new ZeroStep(createDefaultZeroStepConfig())
     const module1 = Object.assign(createDummyModule(),
-      {env: [{name: 'var', default: 'myDefaultValue', valid: (val) => expect(val).to.equal('myDefaultValue')}],
-      init: () => Promise.resolve()}
+      {
+        env: [{name: 'var', default: 'myDefaultValue', valid: (val) => expect(val).to.equal('myDefaultValue')}],
+        init: () => Promise.resolve()
+      }
     )
 
     return core.register(module1).init()
